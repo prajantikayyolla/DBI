@@ -45,9 +45,17 @@ lex.yy.o: Lexer.l
 	lex  Lexer.l
 	gcc  -c lex.yy.c
 
+DBFile_test.out: Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o DBFile_test.o
+	$(CC) -o DBFile_test.out Record.o Comparison.o ComparisonEngine.o Schema.o File.o DBFile.o y.tab.o lex.yy.o DBFile_test.o -lfl -lpthread -lgtest
+
+DBFile_test.o: DBFile_test.cc
+	$(CC) -g -c DBFile_test.cc
+
 clean: 
 	rm -f *.o
 	rm -f *.out
 	rm -f y.tab.c
 	rm -f lex.yy.c
 	rm -f y.tab.h
+
+

@@ -20,13 +20,24 @@ DBFile::DBFile () {
 }
 
 int DBFile::Create (const char *f_path, fType f_type, void *startup) {
+    if(f_type==heap){
     file.Open(0,(char *) f_path);
     return 1;
+    }
+    else{
+        return 0;
+    }
 }
 void DBFile::Load (Schema &f_schema, const char *loadpath) {
     FILE* tf = fopen (loadpath,"r");
     while(current_record->SuckNextRecord(&f_schema,tf)!=0){
         Add(*current_record);
+    }
+    if(dirty_page==1){
+        file.AddPage(&page,page_index);
+        page_index++;
+        page.EmptyItOut();
+        dirty_page=0;
     }
     fclose(tf);
     
@@ -45,14 +56,9 @@ void DBFile::MoveFirst () {
 }
 
 int DBFile::Close () {
-    if(dirty_page==1){
-        file.AddPage(&page,page_index);
-        page_index++;
-        page.EmptyItOut();
-        dirty_page=0;
-    }
     eof=1;
     file.Close();
+    return 1;
 }
 
 void DBFile::Add (Record &rec) {
